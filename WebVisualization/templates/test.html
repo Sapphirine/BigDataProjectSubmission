@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Say Something</title>
+    </head>
+    <body>
+        <p>This is some text</p>
+        <p>{{name}}</p>
+        
+        <div id="test"></div>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script>
+            document.getElementById("test").innerHTML = "test";
+            var count = 0;
+            setInterval(
+                function()
+                {
+                    //this runs every 500 milliseconds
+                    //count += 1;
+                    //document.getElementById("test").innerHTML = count;
+                    
+                    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+                    $.getJSON(
+                        $SCRIPT_ROOT + "/stuff",
+                        function(data)
+                        {
+                            $("#test").text(data.count);
+                        }
+                    );
+                },
+            500);
+        </script>
+    </body>
+</html>

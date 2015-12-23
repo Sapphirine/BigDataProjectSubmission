@@ -1,0 +1,45 @@
+Big Data Analytics Project
+Fall 2015
+Visualization of Machine Learning Algorithms in MapReduce
+
+Jie Yuan
+Ziyu He
+Yubin Shen
+
+# Store the training data on the HDFS, e.g.
+hadoop fs -mkdir /input
+hadoop fs -put mnist_train /input
+
+# Compile the Scramble MapReduce class
+hadoop com.sun.tools.javac.Main Scramble.java
+jar cf sc.jar Scramble*.class
+
+# Run the Scramble MapReduce class
+hadoop jar sc.jar Scramble /final_run/input /final_run/scramble
+
+# Start the web visualizer by running visualizer.py
+cd ../WebVisualization
+python visualizer.py
+
+# Open visualization in browser
+Navigate to localhost:5001/d3vis/
+
+# Run the NeuralNet training MapReduce class
+hadoop com.sun.tools.javac.Main NeuralNet.java
+jar cf nn.jar NeuralNet*.class
+
+# Run the NN train job - observe the error in real time in browser
+# This creates a text description of a neural network model and
+# stores it in the HDFS.
+hadoop jar nn.jar NeuralNet /final_run/scramble /final_run/output
+
+# Copy the newly created neural network into the local directory.
+hadoop fs -cat /final_run/output/part* > nn_model
+
+# Evaluate the new model using local test data. This outputs
+# a file with a list of actual and predicted classes.
+javac TestNN.java
+java TestNN
+
+# Generate a confusion matrix from the classification output
+python confusion_mat.py
